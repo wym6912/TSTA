@@ -1,3 +1,14 @@
+# Modified by wym6912
+Split the consensus sequence and add static linking program.
+
+## Compile with static linking
+```bash
+make STATIC_LINK=1
+```
+
+## Contact
+wym6912 (wym6912@outlook.com)
+
 ## TSTA
 pairwise and multiple sequence alignment accelerated by simd and threads
 ## Introduction

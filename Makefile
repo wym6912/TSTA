@@ -8,15 +8,26 @@ THREAD_SITE = pthreadpool
 THREAD_SRC = ${THREAD_SITE}/pthreadpool.h
 OTHER_SRC = msa/poa.h
 
+STATIC_LINK = 0
+
+ifeq ($(STATIC_LINK), 1)
+	STATIC_ARG = -static
+	LDFLAGS = -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+else
+	STATIC_ARG =
+	LDFLAGS =
+endif
+
+
 all : TSTA_psa TSTA_psa_notrace TSTA_msa clean
 
 #Pairwise sequence alignment
 
 TSTA_psa : ${THREAD_SRC} psa.o pthreadpool.o seqio.o
-	${CC} ${OPTIMIZE_FLAGS} -o $@ $^ -DTRACE -lz -lm ${THREAD_FLAGS}
+	${CC} ${OPTIMIZE_FLAGS} -o $@ $^ -DTRACE -lz -lm ${THREAD_FLAGS} $(STATIC_ARG) $(LDFLAGS)
 
 TSTA_psa_notrace : ${THREAD_SRC} psa-notrace.o pthreadpool.o seqio.o
-	${CC} ${OPTIMIZE_FLAGS} -o $@ $^ -lz -lm ${THREAD_FLAGS}
+	${CC} ${OPTIMIZE_FLAGS} -o $@ $^ -lz -lm ${THREAD_FLAGS} $(STATIC_ARG) $(LDFLAGS)
 
 psa-notrace.o : psa/psa.c
 	${CC} ${OPTIMIZE_FLAGS} -c psa/psa.c -o $@ ${SIMD_FLAGS}
@@ -29,7 +40,7 @@ psa.o : psa/psa.c
 #Multiple sequence alignment
 
 TSTA_msa : ${THREAD_SRC} ${OTHER_SRC} msa.o c-t-simd.o topo.o result.o pthreadpool.o seqio.o
-	${CC} ${OPTIMIZE_FLAGS} -o $@ msa.o c-t-simd.o topo.o result.o pthreadpool.o seqio.o -lz -lm ${THREAD_FLAGS}
+	${CC} ${OPTIMIZE_FLAGS} -o $@ msa.o c-t-simd.o topo.o result.o pthreadpool.o seqio.o -lz -lm ${THREAD_FLAGS} $(STATIC_ARG) $(LDFLAGS)
 
 msa.o : msa/msa.c ${OTHER_SRC}
 	${CC} ${OPTIMIZE_FLAGS} -c msa/msa.c -o $@ ${SIMD_FLAGS}

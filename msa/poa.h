@@ -156,5 +156,5 @@ topo* t_sort(topo* g, int num);
 //poa
 poa* poa_build_init(topo* p, char a[], int sum);
 topo* control(topo* p, char* A, int num, int sum, ThreadPool* pool);
-void printf_result(topo* p, int num, FILE* res);
+void printf_result(topo* p, int num, FILE* res, char mode);
 #endif

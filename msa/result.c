@@ -34,46 +34,49 @@ void printf_con(topo* p, FILE* con)
 		len--;
 	}
 
-	fprintf(con, "consensus:\n");
+	fprintf(con, ">consensus\n");
 	fputs(c, con);
 	free(c);
 }
 
-void printf_result(topo* p, int num, FILE* res)
+void printf_result(topo* p, int num, FILE* res, char mode)
 {
-	int len = 0;
-	char** r = (char**)malloc(num * sizeof(char*));
-	for (int i = 0; i < num; i++)
+	if (mode & 1)
 	{
-		r[i] = (char*)malloc((p->len + 1) * sizeof(char));
-		memset(r[i], '-', p->len);
-	}
-
-	for (int i = 0; i < p->len; i++)
-		if (p->sort[i]->node_logo == 0)
+		int len = 0;
+		char** r = (char**)malloc(num * sizeof(char*));
+		for (int i = 0; i < num; i++)
 		{
-			for (int j = 0; j < num; j++)
-				if (p->sort[i]->passing_seq[j] == 1)
-					r[j][len] = p->sort[i]->base;
-			for (int l = 0; l < p->sort[i]->mismatch_num; l++)
-				for (int j = 0; j < num; j++)
-					if (p->sort[i]->mismatch_node[l]->passing_seq[j] == 1)
-					{
-						r[j][len] = p->sort[i]->mismatch_node[l]->base;
-						p->sort[i]->mismatch_node[l]->node_logo = 1;
-					}
-			len++;
+			r[i] = (char*)malloc((p->len + 1) * sizeof(char));
+			memset(r[i], '-', p->len);
 		}
-				
-	for (int i = 0; i < num; i++)
-	{
-		r[i][len] = '\0';
-		fprintf(res, ">%d\n", i + 1);
-		fputs(r[i], res);
-		fputs("\n", res);
+
+		for (int i = 0; i < p->len; i++)
+			if (p->sort[i]->node_logo == 0)
+			{
+				for (int j = 0; j < num; j++)
+					if (p->sort[i]->passing_seq[j] == 1)
+						r[j][len] = p->sort[i]->base;
+				for (int l = 0; l < p->sort[i]->mismatch_num; l++)
+					for (int j = 0; j < num; j++)
+						if (p->sort[i]->mismatch_node[l]->passing_seq[j] == 1)
+						{
+							r[j][len] = p->sort[i]->mismatch_node[l]->base;
+							p->sort[i]->mismatch_node[l]->node_logo = 1;
+						}
+				len++;
+			}
+					
+		for (int i = 0; i < num; i++)
+		{
+			r[i][len] = '\0';
+			fprintf(res, ">%d\n", i + 1);
+			fputs(r[i], res);
+			fputs("\n", res);
+		}
+		for(int i = 0; i < num; i++)
+			free(r[i]);
+		free(r);
 	}
-	for(int i = 0; i < num; i++)
-		free(r[i]);
-	free(r);
-	printf_con(p, res);
+	if (mode & 2) printf_con(p, res);
 }

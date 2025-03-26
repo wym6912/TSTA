@@ -26,6 +26,7 @@ int bS = 10;
 int L = 10 * block;
 int B = 16;
 int W = 10;
+char mode = 1;
 
 typedef struct seq_s {
 	int seq_num;
@@ -69,6 +70,7 @@ static inline void print_usage()
 	printf("-W                      the width of block(Multiplication of simd data width) [default: 16]\n");
 	printf("-i                      the input sequence(fasta format)\n");
 	printf("-o                      the output file [default: output.txt]\n");
+	printf("-m mode                 the print mode, 1: only print MSA, 2: only print cons, 3: print MSA & cons (default: 1)\n");
 	printf("example:\n./TSTA_msa -i seq.fa -o output.txt\n");
 }
 
@@ -78,7 +80,7 @@ int main(int argc,char* argv[])
 	char* input = NULL;
 	int T = 10;
 	char* output = "output.txt";
-	while((c = getopt(argc,argv,"M:X:E:O:T:W:i:o:")) != -1)
+	while((c = getopt(argc,argv,"M:X:E:O:T:W:i:o:m:")) != -1)
 	{
 		switch(c)
 		{
@@ -105,6 +107,10 @@ int main(int argc,char* argv[])
 				break;
 			case 'o':
 				output = optarg;
+				break;
+			case 'm':
+				mode = atoi(optarg);
+				if (!(1 <= mode && mode <= 3)) { fprintf(stderr, "Error: mode arugment is error. Please check the arugments and check again.\n"); return 1; }
 				break;
 			default:
 				print_usage();
@@ -140,7 +146,7 @@ int main(int argc,char* argv[])
 	s = control(s, seq->S[seq->seq_num - 1], seq->seq_num-1, seq->seq_num, pool);
 	s = t_sort(s, 1);
 	FILE* res = fopen(output, "w");
-	printf_result(s, seq->seq_num, res);
+	printf_result(s, seq->seq_num, res, mode);
 	fclose(res);
 	threadPoolDestory(pool);
 	for (int i = 0; i < seq->seq_num; i++)

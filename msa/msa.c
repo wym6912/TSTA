@@ -137,12 +137,12 @@ int main(int argc,char* argv[])
 	{
 		s = control(s, seq->S[i], i, seq->seq_num, pool);
 		s = t_sort(s, 0);
-		// printf a precessBar
+		// printf a processBar
 		if(i % 100 == 0)
-		printf("\r[%d/%d]", i, seq->seq_num);
+		fprintf(stderr, "\r[%d/%d]", i, seq->seq_num);
 	}
-	printf("\r[%d/%d]", seq->seq_num, seq->seq_num);
-	printf("\n");
+	fprintf(stderr, "\r[%d/%d]", seq->seq_num, seq->seq_num);
+	fprintf(stderr, "\n");
 	s = control(s, seq->S[seq->seq_num - 1], seq->seq_num-1, seq->seq_num, pool);
 	s = t_sort(s, 1);
 	FILE* res = fopen(output, "w");
